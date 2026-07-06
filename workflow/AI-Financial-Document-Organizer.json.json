@@ -1,0 +1,369 @@
+{
+  "name": "My Personal File Save AI agent",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftOutlookTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1312,
+        -384
+      ],
+      "id": "d1e9f938-ba04-4fac-af9d-f50154b6a899",
+      "name": "Microsoft Outlook Trigger",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "GBaBG07cSDSlGbKW",
+          "name": "Microsoft Outlook OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e1ff7736-bb36-4970-8b93-3167bea43396",
+              "leftValue": "={{ $json.from }}",
+              "rightValue": "faizanshami16@gmail.com",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "32d29370-b7cc-4b82-9c5e-0e5705b4f5d0",
+              "leftValue": "={{ $json.hasAttachments }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1136,
+        -384
+      ],
+      "id": "f728858d-15ad-4492-aa14-8d23303f501b",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -688,
+        -192
+      ],
+      "id": "0360cf62-ee6d-4bf6-b2da-03d86ce0911f",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "resource": "messageAttachment",
+        "operation": "getAll",
+        "messageId": {
+          "__rl": true,
+          "value": "={{ $('If').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [
+        -912,
+        -416
+      ],
+      "id": "d8d1177e-4d83-4f58-8968-e7cd8f08b2e8",
+      "name": "Get many attachments",
+      "webhookId": "db63546f-d862-4629-9dd8-515d55c835a9",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "GBaBG07cSDSlGbKW",
+          "name": "Microsoft Outlook OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messageAttachment",
+        "operation": "download",
+        "messageId": {
+          "__rl": true,
+          "value": "={{ $('If').item.json.id }}",
+          "mode": "id"
+        },
+        "attachmentId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        }
+      },
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [
+        -704,
+        -416
+      ],
+      "id": "ed27050d-03b7-48f9-b627-c56690e97e4d",
+      "name": "Download an attachment",
+      "webhookId": "150fdf05-58de-41bc-b9d8-e60788035cde",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "GBaBG07cSDSlGbKW",
+          "name": "Microsoft Outlook OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "operation": "create",
+        "name": "={{ $json.output }}",
+        "options": {
+          "parentFolderId": ""
+        }
+      },
+      "type": "n8n-nodes-base.microsoftOneDrive",
+      "typeVersion": 1.1,
+      "position": [
+        -128,
+        -448
+      ],
+      "id": "cbc7f13f-7ed8-44e2-9ac0-5b9d1d3353c2",
+      "name": "Create a folder",
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "id": "rPENdgty94lwBJWR",
+          "name": "Microsoft Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileName": "={{ $('Download an attachment').item.json.name }}",
+        "parentId": "={{ $('Create a folder').item.json.id }}",
+        "binaryData": true
+      },
+      "type": "n8n-nodes-base.microsoftOneDrive",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        -432
+      ],
+      "id": "d4b25bf6-9eb8-490d-91ee-0eedd41e9beb",
+      "name": "Upload a file",
+      "alwaysOutputData": true,
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "id": "rPENdgty94lwBJWR",
+          "name": "Microsoft Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the attachment filename and decide the folder name.\n\nFilename:\n{{ $('Download an attachment').item.json.name }}\n\nRules:\n- Extract the month and year from the filename.\n- Folder name must be in this format: Month YYYY.\n- If the filename contains July 2026, return July 2026.\n- If it contains June 2026, return June 2026.\n- If month or year is missing, return Unsorted.\n\nReturn only the folder name as plain text. Do not return JSON. Do not use code block:\n  \"folderName\": \"Month YYYY\"\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -480,
+        -448
+      ],
+      "id": "79277c79-20e9-44eb-a307-1524023f410b",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        32,
+        -624
+      ],
+      "id": "2a4c7179-7fd7-4c75-8af8-591f8b9dbdca",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -496,
+        -256
+      ],
+      "id": "c16d4aff-4158-4da8-ac1e-7987a842b7ef",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "MzCiUMZMFZtfIvnE",
+          "name": "OpenAI account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Microsoft Outlook Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get many attachments",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many attachments": {
+      "main": [
+        [
+          {
+            "node": "Download an attachment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download an attachment": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a folder": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Upload a file": {
+      "main": [
+        []
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Create a folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Upload a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e24a24c6-b720-43a3-98a1-c63038c896f5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cb0592e1e94c6bc2f8f46ad8db117ddeb0d3eb6f0a259ebb294dd3158607daf2"
+  },
+  "nodeGroups": [],
+  "id": "nYRYdyUlKiSersy0",
+  "tags": []
+}
