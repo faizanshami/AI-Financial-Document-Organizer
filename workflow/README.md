@@ -1,1 +1,1 @@
-This folder contains the exported n8n workflow
+This folder contains the JSON file
