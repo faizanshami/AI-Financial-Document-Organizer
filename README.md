@@ -25,11 +25,5 @@ The workflow:
 - OpenAI
 - OneDrive
 
-## Workflow Architecture
-Coming soon: workflow screenshot
-
-## Demo
-Coming soon: short demo video
-
 ## Status
 Portfolio project completed and being documented.
