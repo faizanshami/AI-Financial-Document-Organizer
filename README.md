@@ -25,7 +25,7 @@ The workflow:
 - OpenAI
 - OneDrive
 
-## ⚙️ How It Works
+## How It Works
 
 ### Step 1 – Receive Financial Document
 A financial document is sent via Microsoft Outlook with an Excel attachment.
