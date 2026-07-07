@@ -25,5 +25,19 @@ The workflow:
 - OpenAI
 - OneDrive
 
-## Status
-Portfolio project completed and being documented.
+## ⚙️ How It Works
+
+### Step 1 – Receive Financial Document
+A financial document is sent via Microsoft Outlook with an Excel attachment.
+
+### Step 2 – Automatic Workflow Trigger
+The incoming email is automatically detected by Microsoft Outlook, which triggers the n8n automation workflow.
+
+### Step 3 – Download the Attachment
+The workflow securely downloads the attached financial document for processing.
+
+### Step 4 – AI Document Analysis
+The AI agent analyzes the filename to identify the billing period and automatically generates the appropriate monthly folder name.
+
+### Step 5 – Organize the Document
+The workflow creates the required folder in Microsoft OneDrive (if it does not already exist) and uploads the document to the correct location automatically.
