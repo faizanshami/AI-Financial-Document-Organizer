@@ -1,7 +1,9 @@
-# AI Financial Document Organizer
+<img width="800" height="450" alt="DemoOverview-ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/588a725f-d59a-4516-a676-f61d6fefe07c" /># AI Financial Document Organizer
 
 ## Business Problem
 Finance teams often receive daily financial documents through email and manually download, rename, organize, and store them in the correct monthly folders. This process is repetitive, time-consuming, and prone to human error.
+# Video Preview:
+<img width="800" height="450" alt="DemoOverview-ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/4841ade1-42cc-47db-b879-ef3c374a12e8" />
 
 ## Solution
 This project automates the complete document organization process using n8n and AI.
