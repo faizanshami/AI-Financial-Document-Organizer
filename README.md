@@ -1,4 +1,4 @@
-<img width="800" height="450" alt="DemoOverview-ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/588a725f-d59a-4516-a676-f61d6fefe07c" /># AI Financial Document Organizer
+# AI Financial Document Organizer
 
 ## Business Problem
 Finance teams often receive daily financial documents through email and manually download, rename, organize, and store them in the correct monthly folders. This process is repetitive, time-consuming, and prone to human error.
